@@ -10,3 +10,5 @@ export type {
   PatientFilters,
   UpdatePatientInput,
 } from './PatientsContext';
+
+export {DESIGN_CONSTANTS} from '../context/ThemeContext/types';

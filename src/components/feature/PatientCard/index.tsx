@@ -1,4 +1,4 @@
-import {Button, Card} from '@components/ui';
+import {Button, PatientStatusCard} from '@components/ui';
 import {useTheme} from '@context/ThemeContext';
 import React from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
@@ -21,8 +21,8 @@ export const PatientCard: React.FC<PatientCardProps> = ({
 
   const handleDelete = () => {
     Alert.alert(
-      'Eliminar Paciente',
-      `¿Estás seguro de que deseas eliminar a ${patient.name}?`,
+      'Confirmar Eliminación',
+      `¿Está seguro de eliminar el registro de ${patient.name}?\n\nEsta acción no se puede deshacer.`,
       [
         {text: 'Cancelar', style: 'cancel'},
         {
@@ -37,13 +37,13 @@ export const PatientCard: React.FC<PatientCardProps> = ({
   const getStatusColor = (status: Patient['status']) => {
     switch (status) {
       case 'active':
-        return colors.primary;
+        return colors.statusActive;
       case 'in_treatment':
-        return colors.secondary;
+        return colors.statusTreatment;
       case 'recovered':
-        return colors.success;
+        return colors.statusRecovered;
       case 'emergency':
-        return colors.error;
+        return colors.statusEmergency;
       default:
         return colors.gray;
     }
@@ -60,184 +60,330 @@ export const PatientCard: React.FC<PatientCardProps> = ({
       case 'emergency':
         return 'Emergencia';
       default:
-        return 'Desconocido';
+        return 'Sin Estado';
+    }
+  };
+
+  const getStatusIcon = (status: Patient['status']) => {
+    switch (status) {
+      case 'active':
+        return '🐾';
+      case 'in_treatment':
+        return '🏥';
+      case 'recovered':
+        return '✅';
+      case 'emergency':
+        return '🚨';
+      default:
+        return '📋';
     }
   };
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('es-ES', {
       day: '2-digit',
-      month: '2-digit',
+      month: 'short',
       year: 'numeric',
+    });
+  };
+
+  const formatDateShort = (date: Date) => {
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
     });
   };
 
   return (
     <TouchableOpacity
-      activeOpacity={0.7}
+      activeOpacity={0.95}
       onPress={onPress}
       style={styles.touchable}>
-      <Card style={styles.card}>
+      <PatientStatusCard status={patient.status} style={styles.card}>
+        {/* Header con información principal */}
         <View style={styles.header}>
           <View style={styles.patientInfo}>
-            <Text style={[styles.patientName, {color: colors.primary}]}>
-              {patient.name}
-            </Text>
-            <Text style={[styles.species, {color: colors.text}]}>
+            <View style={styles.nameRow}>
+              <Text style={[styles.patientName, {color: colors.text}]}>
+                {patient.name}
+              </Text>
+              <View style={styles.genderIndicator}>
+                <Text style={[styles.genderText, {color: colors.onSurface}]}>
+                  {patient.gender === 'male'
+                    ? '♂'
+                    : patient.gender === 'female'
+                    ? '♀'
+                    : ''}
+                </Text>
+              </View>
+            </View>
+            <Text style={[styles.speciesInfo, {color: colors.onSurface}]}>
               {patient.species}
-              {patient.breed && ` - ${patient.breed}`}
-              {patient.age && ` (${patient.age} años)`}
+              {patient.breed && ` • ${patient.breed}`}
+              {patient.age && ` • ${patient.age} años`}
             </Text>
           </View>
-          <View
-            style={[
-              styles.statusBadge,
-              {backgroundColor: getStatusColor(patient.status) + '20'},
-            ]}>
-            <Text
+
+          <View style={styles.statusContainer}>
+            <View
               style={[
-                styles.statusText,
-                {color: getStatusColor(patient.status)},
+                styles.statusBadge,
+                {backgroundColor: getStatusColor(patient.status) + '20'},
               ]}>
-              {getStatusLabel(patient.status)}
+              <Text style={styles.statusIcon}>
+                {getStatusIcon(patient.status)}
+              </Text>
+              <Text
+                style={[
+                  styles.statusText,
+                  {color: getStatusColor(patient.status)},
+                ]}>
+                {getStatusLabel(patient.status)}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Información del propietario */}
+        <View style={styles.ownerSection}>
+          <View style={styles.ownerInfo}>
+            <Text style={[styles.sectionLabel, {color: colors.onSurface}]}>
+              PROPIETARIO
+            </Text>
+            <Text
+              style={[styles.ownerName, {color: colors.text}]}
+              numberOfLines={1}>
+              {patient.ownerName}
+            </Text>
+            <Text
+              style={[styles.ownerContact, {color: colors.onSurface}]}
+              numberOfLines={1}>
+              {patient.ownerEmail}
             </Text>
           </View>
         </View>
 
-        <View style={styles.ownerInfo}>
-          <Text style={[styles.label, {color: colors.gray}]}>Propietario:</Text>
-          <Text style={[styles.ownerName, {color: colors.text}]}>
-            {patient.ownerName}
+        {/* Síntomas - Vista previa */}
+        <View style={styles.symptomsSection}>
+          <Text style={[styles.sectionLabel, {color: colors.onSurface}]}>
+            SÍNTOMAS
           </Text>
-          <Text style={[styles.ownerEmail, {color: colors.gray}]}>
-            {patient.ownerEmail}
-          </Text>
-        </View>
-
-        <View style={styles.symptomsContainer}>
-          <Text style={[styles.label, {color: colors.gray}]}>Síntomas:</Text>
           <Text
-            style={[styles.symptoms, {color: colors.text}]}
+            style={[styles.symptomsText, {color: colors.text}]}
             numberOfLines={2}>
             {patient.symptoms}
           </Text>
         </View>
 
-        <View style={styles.dateInfo}>
-          <Text style={[styles.dateLabel, {color: colors.gray}]}>
-            Fecha de registro: {formatDate(patient.dateCreated)}
-          </Text>
-          {patient.nextAppointment && (
-            <Text style={[styles.nextAppointment, {color: colors.secondary}]}>
-              Próxima cita: {formatDate(patient.nextAppointment)}
+        {/* Información de fechas */}
+        <View style={styles.datesSection}>
+          <View style={styles.dateItem}>
+            <Text style={[styles.dateLabel, {color: colors.onSurface}]}>
+              Registro
             </Text>
+            <Text style={[styles.dateValue, {color: colors.text}]}>
+              {formatDate(patient.dateCreated)}
+            </Text>
+          </View>
+
+          {patient.nextAppointment && (
+            <View style={styles.dateItem}>
+              <Text style={[styles.dateLabel, {color: colors.secondary}]}>
+                Próxima Cita
+              </Text>
+              <Text style={[styles.dateValue, {color: colors.secondary}]}>
+                {formatDateShort(patient.nextAppointment)}
+              </Text>
+            </View>
           )}
         </View>
 
+        {/* Divisor */}
+        <View style={[styles.divider, {backgroundColor: colors.divider}]} />
+
+        {/* Botones de acción */}
         <View style={styles.actions}>
+          <Button
+            text="Ver Detalles"
+            type="primary"
+            buttonStyle={[styles.actionButton, styles.detailsButton]}
+            textStyle={styles.actionButtonText}
+            onPress={e => {
+              e?.stopPropagation?.();
+              onPress?.();
+            }}
+          />
           <Button
             text="Editar"
             type="secondary"
-            buttonStyle={styles.actionButton}
+            buttonStyle={[styles.actionButton, styles.editButton]}
+            textStyle={styles.actionButtonText}
             onPress={e => {
               e?.stopPropagation?.();
               onEdit?.();
             }}
           />
-          <Button
-            text="Eliminar"
-            type="danger"
-            buttonStyle={styles.actionButton}
+          <TouchableOpacity
+            style={[styles.deleteButton, {borderColor: colors.error}]}
             onPress={e => {
               e?.stopPropagation?.();
               handleDelete();
-            }}
-          />
+            }}>
+            <Text style={[styles.deleteButtonText, {color: colors.error}]}>
+              🗑️
+            </Text>
+          </TouchableOpacity>
         </View>
-      </Card>
+      </PatientStatusCard>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   touchable: {
-    marginVertical: 4,
+    marginVertical: 6,
   },
   card: {
-    marginVertical: 4,
+    marginVertical: 0,
+    padding: 20,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   patientInfo: {
-    flex: 1,
+    marginBottom: 12,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
   },
   patientName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
-    marginBottom: 4,
+    flex: 1,
   },
-  species: {
-    fontSize: 14,
+  genderIndicator: {
+    marginLeft: 8,
+  },
+  genderText: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  speciesInfo: {
+    fontSize: 15,
     fontWeight: '500',
+    lineHeight: 20,
+  },
+  statusContainer: {
+    alignItems: 'flex-end',
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginLeft: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    minWidth: 100,
+  },
+  statusIcon: {
+    fontSize: 14,
+    marginRight: 6,
   },
   statusText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  ownerSection: {
+    marginBottom: 16,
   },
   ownerInfo: {
-    marginBottom: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    padding: 12,
+    borderRadius: 8,
   },
-  label: {
-    fontSize: 12,
-    fontWeight: '600',
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '700',
     textTransform: 'uppercase',
-    marginBottom: 2,
+    letterSpacing: 1,
+    marginBottom: 4,
   },
   ownerName: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 2,
   },
-  ownerEmail: {
+  ownerContact: {
     fontSize: 14,
+    fontWeight: '400',
   },
-  symptomsContainer: {
-    marginBottom: 12,
+  symptomsSection: {
+    marginBottom: 16,
   },
-  symptoms: {
+  symptomsText: {
     fontSize: 14,
     lineHeight: 20,
+    fontWeight: '400',
   },
-  dateInfo: {
-    marginBottom: 12,
+  datesSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  dateItem: {
+    flex: 1,
+    alignItems: 'center',
   },
   dateLabel: {
-    fontSize: 12,
-    marginBottom: 2,
-  },
-  nextAppointment: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  dateValue: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  divider: {
+    height: 1,
+    marginBottom: 16,
   },
   actions: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    alignItems: 'center',
     gap: 8,
   },
   actionButton: {
-    paddingVertical: 6,
+    flex: 1,
+    paddingVertical: 10,
     paddingHorizontal: 12,
-    minWidth: 80,
+    borderRadius: 8,
+  },
+  detailsButton: {
+    flex: 2,
+  },
+  editButton: {
+    flex: 1.5,
+  },
+  actionButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    textTransform: 'none',
+  },
+  deleteButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  deleteButtonText: {
+    fontSize: 16,
   },
 });
