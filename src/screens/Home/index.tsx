@@ -231,7 +231,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     </View>
   );
 
-  const renderEmptyState = () => {
+  // This will be used as ListEmptyComponent
+  const renderEmptyStateContent = () => {
     if (searchQuery.trim() || selectedFilter !== 'all') {
       return (
         <Card style={styles.emptyCard}>
@@ -290,13 +291,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     );
   };
 
-  const renderPatientsList = () => {
-    if (filteredPatients.length === 0) {
-      return renderEmptyState();
-    }
-
-    return (
-      <View style={styles.listSection}>
+  const renderListHeader = () => (
+    <View style={styles.headerContent}>
+      {renderStatsHeader()}
+      {renderFilters()}
+      {renderSearchAndActions()}
+      {/* "Pacientes Registrados" header moved here, only if there are patients to display */}
+      {filteredPatients.length > 0 && (
         <View style={styles.listHeader}>
           <Text style={[styles.listTitle, {color: colors.text}]}>
             Pacientes Registrados
@@ -306,30 +307,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             {filteredPatients.length === 1 ? 'paciente' : 'pacientes'}
           </Text>
         </View>
-
-        <FlatList
-          data={filteredPatients}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => (
-            <PatientCard
-              patient={item}
-              onPress={() => handlePatientPress(item)}
-              onEdit={() => handleEditPatient(item)}
-              onDelete={() => handleDeletePatient(item.id)}
-            />
-          )}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-        />
-      </View>
-    );
-  };
-
-  const renderHeader = () => (
-    <View style={styles.headerContent}>
-      {renderStatsHeader()}
-      {renderFilters()}
-      {renderSearchAndActions()}
+      )}
     </View>
   );
 
@@ -355,9 +333,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       )}
 
       <FlatList
-        data={[]}
-        ListHeaderComponent={renderHeader}
-        ListFooterComponent={renderPatientsList}
+        data={filteredPatients}
+        ListHeaderComponent={renderListHeader}
+        renderItem={({item}) => (
+          <PatientCard
+            patient={item}
+            onPress={() => handlePatientPress(item)}
+            onEdit={() => handleEditPatient(item)}
+            onDelete={() => handleDeletePatient(item.id)}
+          />
+        )}
+        ListEmptyComponent={renderEmptyStateContent}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -421,14 +407,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     marginBottom: 16,
+    marginTop: 15,
   },
   statsGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 8,
+    flexWrap: 'wrap',
   },
   statCard: {
-    flex: 1,
+    width: '48%',
+    marginVertical: 8,
+    marginHorizontal: '1%',
     alignItems: 'center',
     padding: 16,
   },
@@ -469,7 +457,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   filterText: {
-    fontSize: 11,
+    fontSize: 9,
     fontWeight: '600',
     textAlign: 'center',
   },

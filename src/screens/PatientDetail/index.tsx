@@ -711,7 +711,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   statusText: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '700',
     color: '#FFFFFF',
     textTransform: 'uppercase',
@@ -725,8 +725,8 @@ const styles = StyleSheet.create({
 
   // Sistema de pestañas
   tabContainer: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
     marginTop: -10,
     paddingTop: 20,
     elevation: 4,
@@ -738,6 +738,7 @@ const styles = StyleSheet.create({
   tabScrollContent: {
     flexDirection: 'row',
     paddingHorizontal: 20,
+    marginBottom: 16,
     gap: 12,
   },
   tab: {
@@ -745,7 +746,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 25,
+    borderRadius: 15,
     minWidth: 100,
   },
   activeTab: {

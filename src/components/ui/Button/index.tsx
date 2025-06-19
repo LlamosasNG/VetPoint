@@ -1,6 +1,7 @@
 import {useTheme} from '@context/ThemeContext';
 import React from 'react';
 import {
+  ActivityIndicator,
   Pressable,
   PressableProps,
   StyleProp,
@@ -64,9 +65,11 @@ export const Button: React.FC<ButtonProps> = ({
       onPress={onPress}
       disabled={isDisabled}
       {...rest}>
-      <Text style={[styles.text, textStyle]}>
-        {loading ? 'Cargando...' : text}
-      </Text>
+      {loading ? (
+        <ActivityIndicator color="#FFFFFF" size="small" />
+      ) : (
+        <Text style={[styles.text, textStyle]}>{text}</Text>
+      )}
     </Pressable>
   );
 };

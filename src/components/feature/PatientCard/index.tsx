@@ -1,7 +1,14 @@
 import {Button, PatientStatusCard} from '@components/ui';
 import {useTheme} from '@context/ThemeContext';
 import React from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  GestureResponderEvent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {Patient} from '../../../types/Patient';
 
 interface PatientCardProps {
@@ -208,8 +215,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({
             type="primary"
             buttonStyle={[styles.actionButton, styles.detailsButton]}
             textStyle={styles.actionButtonText}
-            onPress={e => {
-              e?.stopPropagation?.();
+            onPress={() => {
               onPress?.();
             }}
           />
@@ -218,14 +224,13 @@ export const PatientCard: React.FC<PatientCardProps> = ({
             type="secondary"
             buttonStyle={[styles.actionButton, styles.editButton]}
             textStyle={styles.actionButtonText}
-            onPress={e => {
-              e?.stopPropagation?.();
+            onPress={() => {
               onEdit?.();
             }}
           />
           <TouchableOpacity
             style={[styles.deleteButton, {borderColor: colors.error}]}
-            onPress={e => {
+            onPress={(e: GestureResponderEvent) => {
               e?.stopPropagation?.();
               handleDelete();
             }}>

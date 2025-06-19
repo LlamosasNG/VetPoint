@@ -166,5 +166,5 @@ export const VetHeader: React.FC<
     screenTitle: string;
   }
 > = ({screenTitle, ...props}) => {
-  return <Header title={`VetCare Pro`} subtitle={screenTitle} {...props} />;
+  return <Header title={`VetPoint`} subtitle={screenTitle} {...props} />;
 };
