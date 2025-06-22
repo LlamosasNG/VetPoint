@@ -1,5 +1,6 @@
 // Exportar todos los tipos
 export * from './Patient';
+export * from './User';
 
 // Tipos globales
 export interface ApiResponse<T> {

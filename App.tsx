@@ -1,4 +1,5 @@
 import {PatientsProvider} from '@/context';
+import {AuthProvider} from '@/context/AuthContext';
 import {ThemeProvider} from '@context/ThemeContext';
 import {AppNavigator} from '@navigation/AppNavigator';
 import React from 'react';
@@ -8,9 +9,11 @@ const App = () => {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <PatientsProvider>
-          <AppNavigator />
-        </PatientsProvider>
+        <AuthProvider>
+          <PatientsProvider>
+            <AppNavigator />
+          </PatientsProvider>
+        </AuthProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

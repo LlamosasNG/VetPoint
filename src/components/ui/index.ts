@@ -14,3 +14,5 @@ export type {SearchBarProps} from './SearchBar';
 export {EmptyState} from './EmptyState';
 
 export {Header, VetHeader} from './Header';
+
+export {Logo} from './Logo';

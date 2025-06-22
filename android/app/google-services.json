@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "772004018587",
+    "project_id": "vetpoint-74ed0",
+    "storage_bucket": "vetpoint-74ed0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772004018587:android:0223a57a28a03a975a493e",
+        "android_client_info": {
+          "package_name": "com.vetpoint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJ-Pj2aTwJXMnGw-PRY5L0S2dY5QD2cx0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

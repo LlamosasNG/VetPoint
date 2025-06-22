@@ -16,6 +16,7 @@ module.exports = {
           '@utils': './src/utils',
           '@types': './src/types',
           '@assets': './src/assets',
+          '@public': './public',
         },
       },
     ],

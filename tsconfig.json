@@ -12,7 +12,8 @@
       "@services/*": ["./services/*"],
       "@utils/*": ["./utils/*"],
       "@types/*": ["./types/*"],
-      "@assets/*": ["./assets/*"]
+      "@assets/*": ["./assets/*"],
+      "@public/*": ["./public/*"],
     },
     "resolveJsonModule": true
   },
