@@ -1,7 +1,7 @@
-import {Button, Card, Input, Logo} from '@components/ui';
-import {useTheme} from '@context/ThemeContext';
-import {RootStackScreenProps} from '@navigation/types';
-import React, {useState} from 'react';
+import { Button, Card, Input, Logo } from '@components/ui';
+import { useTheme } from '@context/ThemeContext';
+import { RootStackScreenProps } from '@navigation/types';
+import React, { useState } from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -26,7 +26,6 @@ export const RegisterScreen: React.FC<RootStackScreenProps<'Register'>> = ({
       Alert.alert('Campos incompletos', 'Por favor, rellena todos los campos.');
       return;
     }
-
     navigation.navigate('RegisterProfessionalInfo', {
       name,
       email,

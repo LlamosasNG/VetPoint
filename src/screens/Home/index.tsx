@@ -1,5 +1,6 @@
 // src/screens/Home/index.tsx - Versión profesional
 
+import {useAuth} from '@/context/AuthContext';
 import {mockPatients} from '@/utils/mockData';
 import {PatientCard} from '@components/feature/PatientCard';
 import {Button, Card, SearchBar, StatsCard, VetHeader} from '@components/ui';
@@ -37,6 +38,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [selectedFilter, setSelectedFilter] = useState<
     'all' | 'active' | 'in_treatment' | 'emergency'
   >('all');
+
+  const {logout, userData} = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // El listener en AuthContext se encargará de la navegación
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
 
   // Filtrar pacientes basado en la búsqueda y filtros
   const getFilteredPatients = () => {
@@ -325,6 +337,23 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         }
       />
 
+      <Text style={[styles.title, {color: colors.primary}]}>¡Bienvenido!</Text>
+      {/* Mostramos el nombre del usuario si está disponible */}
+      {userData && (
+        <Text style={[styles.subtitle, {color: colors.text}]}>
+          {userData.name}
+        </Text>
+      )}
+
+      {/* --- BOTÓN DE LOGOUT TEMPORAL --- */}
+      <View style={styles.logoutButton}>
+        <Button
+          text="Cerrar Sesión (Temporal)"
+          onPress={handleLogout}
+          type="secondary"
+        />
+      </View>
+
       {error && (
         <View
           style={[styles.errorBanner, {backgroundColor: colors.error + '20'}]}>
@@ -548,5 +577,23 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '300',
     color: '#FFFFFF',
+  },
+  // Estilo para botón logout temporal
+  content: {
+    padding: 24,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  logoutButton: {
+    marginTop: 30,
+    marginHorizontal: 50,
   },
 });

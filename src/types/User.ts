@@ -31,7 +31,7 @@ export interface CreateUserInput {
  * Define los datos necesarios para iniciar sesión.
  * Es una combinación de los datos de autenticación que se envían al iniciar sesión.
  */
-export type LoginInput = Pick<CreateUserInput, 'email' | 'password'>;
+export type LoginUserInput = Pick<CreateUserInput, 'email' | 'password'>;
 
 /**
  * Define los datos profesionales del usuario que se almacenarán

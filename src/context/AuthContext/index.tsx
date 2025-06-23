@@ -44,7 +44,6 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
     await auth().signInWithEmailAndPassword(email, password);
   };
 
-  // La función register ahora recibe un solo objeto con todos los datos
   const register = async (userData: CreateUserInput) => {
     const {email, password, ...professionalData} = userData;
 

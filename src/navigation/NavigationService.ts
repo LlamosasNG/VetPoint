@@ -1,12 +1,10 @@
-import {
-  CommonActions,
-  NavigationContainerRef
-} from '@react-navigation/native';
-import { createRef } from 'react';
-import { RootStackParamList } from './types';
+import {CommonActions, NavigationContainerRef} from '@react-navigation/native';
+import {createRef} from 'react';
+import {RootStackParamList} from './types';
 
 // Crear una referencia al navegador correctamente tipada
-export const navigationRef = createRef<NavigationContainerRef<RootStackParamList>>();
+export const navigationRef =
+  createRef<NavigationContainerRef<RootStackParamList>>();
 
 /**
  * Servicio de navegación centralizado
@@ -18,7 +16,7 @@ class NavigationService {
   navigate<T extends keyof RootStackParamList>(
     screenName: T,
     params?: RootStackParamList[T],
-  ): boolean {
+  ):  boolean{
     if (navigationRef.current) {
       try {
         navigationRef.current.navigate(screenName as any, params as any);
