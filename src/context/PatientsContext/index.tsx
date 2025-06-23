@@ -1,3 +1,4 @@
+import {notificationService} from '@/services/NotificationService';
 import {
   CreatePatientInput,
   Patient,
@@ -85,6 +86,13 @@ export const PatientsProvider: React.FC<{children: React.ReactNode}> = ({
       lastVisit: firestore.FieldValue.serverTimestamp(),
     };
     await patientsCollection.add(newPatientData);
+
+    // Programar notificación si hay una cita
+    if (patientData.nextAppointment) {
+      notificationService.scheduleAppointmentNotification(
+        patientData as Patient,
+      );
+    }
   };
 
   // Actualizar paciente
@@ -93,16 +101,32 @@ export const PatientsProvider: React.FC<{children: React.ReactNode}> = ({
   ): Promise<void> => {
     if (!patientsCollection) throw new Error('Usuario no autenticado.');
 
+     // Antes de actualizar, cancelamos la notificación anterior si existía
+    const originalPatient = patients.find(p => p.id === patientData.id);
+    if (originalPatient?.nextAppointment) {
+      notificationService.cancelNotification(originalPatient.nextAppointment);
+    }
+
     const {id, ...dataToUpdate} = patientData;
     await patientsCollection.doc(id).update({
       ...dataToUpdate,
       lastVisit: firestore.FieldValue.serverTimestamp(),
     });
+
+     // Programar nueva notificación si hay una cita
+    if (patientData.nextAppointment) {
+      notificationService.scheduleAppointmentNotification(patientData as Patient);
+    }
   };
 
   // Eliminar paciente
   const deletePatient = async (id: string): Promise<void> => {
     if (!patientsCollection) throw new Error('Usuario no autenticado.');
+    // Cancelar la notificación antes de eliminar
+    const patientToDelete = patients.find(p => p.id === id);
+    if (patientToDelete?.nextAppointment) {
+      notificationService.cancelNotification(patientToDelete.nextAppointment);
+    }
     await patientsCollection.doc(id).delete();
   };
 
