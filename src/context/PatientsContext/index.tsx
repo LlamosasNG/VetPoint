@@ -7,7 +7,13 @@ import {
 } from '@/types/Patient';
 import {useAuth} from '@context/AuthContext';
 import firestore from '@react-native-firebase/firestore';
-import React, {createContext, useContext, useEffect, useState} from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 interface PatientsContextProps {
   patients: Patient[];
@@ -34,6 +40,9 @@ export const PatientsProvider: React.FC<{children: React.ReactNode}> = ({
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Usamos una referencia para guardar el estado anterior de los pacientes
+  const prevPatientsRef = useRef<Patient[]>();
 
   // Referencia a la subcolección de pacientes del usuario actual
   const patientsCollection = user
@@ -74,25 +83,53 @@ export const PatientsProvider: React.FC<{children: React.ReactNode}> = ({
     }
   }, [user]);
 
+  // Este efecto se ejecuta DESPUÉS de que la lista de pacientes se ha actualizado.
+  useEffect(() => {
+    const prevPatients = prevPatientsRef.current;
+
+    // Comparamos la lista nueva con la anterior para ver qué cambió
+    if (prevPatients) {
+      patients.forEach(currentPatient => {
+        const prevPatient = prevPatients.find(p => p.id === currentPatient.id);
+
+        // Caso 1: Paciente nuevo o cita actualizada
+        if (
+          !prevPatient ||
+          (currentPatient.nextAppointment &&
+            currentPatient.nextAppointment !== prevPatient.nextAppointment)
+        ) {
+          console.log(
+            `Detectado cambio de cita para ${currentPatient.name}. Programando notificación.`,
+          );
+          notificationService.scheduleAppointmentNotification(currentPatient);
+        }
+        // Caso 2: Cita eliminada
+        else if (
+          prevPatient?.nextAppointment &&
+          !currentPatient.nextAppointment
+        ) {
+          console.log(
+            `Detectada eliminación de cita para ${currentPatient.name}. Cancelando notificación.`,
+          );
+          notificationService.cancelNotification(currentPatient.id);
+        }
+      });
+    }
+
+    // Actualizamos la referencia para la próxima comparación
+    prevPatientsRef.current = patients;
+  }, [patients]);
+
   // Crear nuevo paciente en Firestore
   const createPatient = async (
     patientData: CreatePatientInput,
   ): Promise<void> => {
     if (!patientsCollection) throw new Error('Usuario no autenticado.');
-
-    const newPatientData = {
+    await patientsCollection.add({
       ...patientData,
       dateCreated: firestore.FieldValue.serverTimestamp(),
       lastVisit: firestore.FieldValue.serverTimestamp(),
-    };
-    await patientsCollection.add(newPatientData);
-
-    // Programar notificación si hay una cita
-    if (patientData.nextAppointment) {
-      notificationService.scheduleAppointmentNotification(
-        patientData as Patient,
-      );
-    }
+    });
   };
 
   // Actualizar paciente
@@ -100,33 +137,17 @@ export const PatientsProvider: React.FC<{children: React.ReactNode}> = ({
     patientData: UpdatePatientInput,
   ): Promise<void> => {
     if (!patientsCollection) throw new Error('Usuario no autenticado.');
-
-     // Antes de actualizar, cancelamos la notificación anterior si existía
-    const originalPatient = patients.find(p => p.id === patientData.id);
-    if (originalPatient?.nextAppointment) {
-      notificationService.cancelNotification(originalPatient.nextAppointment);
-    }
-
     const {id, ...dataToUpdate} = patientData;
     await patientsCollection.doc(id).update({
       ...dataToUpdate,
       lastVisit: firestore.FieldValue.serverTimestamp(),
     });
-
-     // Programar nueva notificación si hay una cita
-    if (patientData.nextAppointment) {
-      notificationService.scheduleAppointmentNotification(patientData as Patient);
-    }
   };
 
   // Eliminar paciente
   const deletePatient = async (id: string): Promise<void> => {
     if (!patientsCollection) throw new Error('Usuario no autenticado.');
-    // Cancelar la notificación antes de eliminar
-    const patientToDelete = patients.find(p => p.id === id);
-    if (patientToDelete?.nextAppointment) {
-      notificationService.cancelNotification(patientToDelete.nextAppointment);
-    }
+    notificationService.cancelNotification(id);
     await patientsCollection.doc(id).delete();
   };
 
