@@ -1,3 +1,4 @@
+import {Patient} from '@/types/Patient';
 import {Button, PatientStatusCard} from '@components/ui';
 import {useTheme} from '@context/ThemeContext';
 import React from 'react';
@@ -9,7 +10,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Patient} from '../../../types/Patient';
 
 interface PatientCardProps {
   patient: Patient;
@@ -86,16 +86,22 @@ export const PatientCard: React.FC<PatientCardProps> = ({
     }
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('es-ES', {
+  const formatDate = (date?: Date) => {
+    if (!date) {
+      return 'Fecha no disponible';
+    }
+    return new Date(date).toLocaleDateString('es-ES', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
     });
   };
 
-  const formatDateShort = (date: Date) => {
-    return date.toLocaleDateString('es-ES', {
+  const formatDateShort = (date?: Date) => {
+    if (!date) {
+      return 'N/A';
+    }
+    return new Date(date).toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',
     });

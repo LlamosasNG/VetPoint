@@ -1,10 +1,10 @@
 import {CommonActions, NavigationContainerRef} from '@react-navigation/native';
 import {createRef} from 'react';
-import {RootStackParamList} from './types';
+import {AppTabParamList} from './types';
 
 // Crear una referencia al navegador correctamente tipada
 export const navigationRef =
-  createRef<NavigationContainerRef<RootStackParamList>>();
+  createRef<NavigationContainerRef<AppTabParamList>>();
 
 /**
  * Servicio de navegación centralizado
@@ -13,9 +13,9 @@ class NavigationService {
   /**
    * Navega a una pantalla específica
    */
-  navigate<T extends keyof RootStackParamList>(
+  navigate<T extends keyof AppTabParamList>(
     screenName: T,
-    params?: RootStackParamList[T],
+    params?: AppTabParamList[T],
   ):  boolean{
     if (navigationRef.current) {
       try {
@@ -55,9 +55,9 @@ class NavigationService {
   /**
    * Reinicia a una pantalla específica, limpiando la pila de navegación
    */
-  reset<T extends keyof RootStackParamList>(
+  reset<T extends keyof AppTabParamList>(
     screenName: T,
-    params?: RootStackParamList[T],
+    params?: AppTabParamList[T],
   ): boolean {
     if (navigationRef.current) {
       try {

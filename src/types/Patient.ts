@@ -1,3 +1,12 @@
+/**
+ * Define los posibles estados de un paciente.
+ */
+export type PatientStatus =
+  | 'active'
+  | 'in_treatment'
+  | 'recovered'
+  | 'emergency';
+
 export interface Patient {
   id: string;
   // Información básica
@@ -27,7 +36,7 @@ export interface Patient {
   photos?: string[]; // URLs o paths de fotos
 
   // Estado
-  status: 'active' | 'recovered' | 'in_treatment' | 'emergency';
+  status: PatientStatus;
 }
 
 // Tipo para crear un nuevo paciente (sin ID y fechas)
@@ -45,7 +54,7 @@ export interface CreatePatientInput {
   treatment?: string;
   notes?: string;
   nextAppointment?: Date;
-  status?: 'active' | 'recovered' | 'in_treatment' | 'emergency';
+  status?: PatientStatus;
 }
 
 // Tipo para actualizar un paciente

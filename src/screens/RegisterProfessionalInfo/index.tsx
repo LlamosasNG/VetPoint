@@ -2,7 +2,7 @@ import {useAuth} from '@/context/AuthContext';
 import {CreateUserInput} from '@/types';
 import {Button, Card, Input, Logo} from '@components/ui';
 import {useTheme} from '@context/ThemeContext';
-import {RootStackScreenProps} from '@navigation/types';
+import {AuthScreenProps} from '@navigation/types';
 import React, {useState} from 'react';
 import {
   Alert,
@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 
 export const RegisterProfessionalInfoScreen: React.FC<
-  RootStackScreenProps<'RegisterProfessionalInfo'>
+  AuthScreenProps<'RegisterProfessionalInfo'>
 > = ({route}) => {
   const {name, email, password} = route.params;
   const {colors} = useTheme();

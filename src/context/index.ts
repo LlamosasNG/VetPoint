@@ -4,11 +4,5 @@ export type {ThemeColors, ThemeContextProps, ThemeType} from './ThemeContext';
 
 // Patients Context
 export {PatientsProvider, usePatients} from './PatientsContext';
-export type {
-  CreatePatientInput,
-  Patient,
-  PatientFilters,
-  UpdatePatientInput,
-} from './PatientsContext';
 
 export {DESIGN_CONSTANTS} from '../context/ThemeContext/types';

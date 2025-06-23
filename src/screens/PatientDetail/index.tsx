@@ -3,7 +3,7 @@
 import {Button, Card, VetHeader} from '@components/ui';
 import {usePatients} from '@context/PatientsContext';
 import {useTheme} from '@context/ThemeContext';
-import {PatientDetailScreenProps} from '@navigation/types';
+import {HomeStackScreenProps} from '@navigation/types';
 import React, {useState} from 'react';
 import {
   Alert,
@@ -26,9 +26,9 @@ interface TabInfo {
   color: string;
 }
 
-export const PatientDetailScreen: React.FC<PatientDetailScreenProps> = ({
-  navigation,
-}) => {
+export const PatientDetailScreen: React.FC<
+  HomeStackScreenProps<'PatientDetail'>
+> = ({navigation}) => {
   const {colors} = useTheme();
   const {selectedPatient, selectPatient, deletePatient} = usePatients();
   const [activeTab, setActiveTab] = useState<
@@ -150,7 +150,11 @@ export const PatientDetailScreen: React.FC<PatientDetailScreenProps> = ({
     }
   };
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date?: Date) => {
+    // Si la fecha no existe, devuelve un texto por defecto.
+    if (!date) {
+      return 'No especificada';
+    }
     return date.toLocaleDateString('es-ES', {
       weekday: 'long',
       year: 'numeric',
@@ -159,7 +163,11 @@ export const PatientDetailScreen: React.FC<PatientDetailScreenProps> = ({
     });
   };
 
-  const formatDateTime = (date: Date) => {
+  const formatDateTime = (date?: Date) => {
+    // Hacemos lo mismo para la fecha y hora.
+    if (!date) {
+      return 'No programada';
+    }
     return date.toLocaleString('es-ES', {
       weekday: 'short',
       day: '2-digit',

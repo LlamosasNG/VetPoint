@@ -1,7 +1,7 @@
-import { Button, Card, Input, Logo } from '@components/ui';
-import { useTheme } from '@context/ThemeContext';
-import { RootStackScreenProps } from '@navigation/types';
-import React, { useState } from 'react';
+import {Button, Card, Input, Logo} from '@components/ui';
+import {useTheme} from '@context/ThemeContext';
+import {AuthScreenProps} from '@navigation/types';
+import React, {useState} from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 
-export const RegisterScreen: React.FC<RootStackScreenProps<'Register'>> = ({
+export const RegisterScreen: React.FC<AuthScreenProps<'Register'>> = ({
   navigation,
 }) => {
   const {colors} = useTheme();

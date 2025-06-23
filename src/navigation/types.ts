@@ -1,67 +1,54 @@
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import {
+  CompositeScreenProps,
+  NavigatorScreenParams,
+} from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-/**
- * Define los parámetros para cada ruta en el Stack Navigator principal
- */
-export type RootStackParamList = {
-  /**
-   * Pantalla de inicio de sesión
-   */
+// --- STACKS INDIVIDUALES ---
+
+// Stack para las pantallas de autenticación
+export type AuthStackParamList = {
   Login: undefined;
-
-  /**
-   * Pantalla de registro de usuarios
-   */
   Register: undefined;
-  RegisterProfessionalInfo: {
-    name: string;
-    email: string;
-    password: string;
-  };
-
-  /**
-   * Pantalla principal que muestra la lista de pacientes
-   */
-  Home: undefined;
-
-  /**
-   * Formulario para crear o editar pacientes
-   */
-  PatientForm: undefined;
-
-  /**
-   * Pantalla de detalles del paciente
-   */
-  PatientDetail: undefined;
+  RegisterProfessionalInfo: { name: string; email: string; password: string };
 };
 
-// Tipos para las props de cada pantalla
-export type LoginScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'Login'
->;
-export type RegisterScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'Register'
->;
-export type HomeScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'Home'
->;
-export type PatientFormScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'PatientForm'
->;
-export type PatientDetailScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'PatientDetail'
->;
+// Stack para las pantallas principales (cuando estás logueado)
+export type HomeStackParamList = {
+  Home: undefined;
+  PatientDetail: undefined;
+  PatientForm: undefined;
+};
 
-export type RegisterProfessionalInfoScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'RegisterProfessionalInfo'
->;
+// Stack para la pestaña de la cuenta
+export type AccountStackParamList = {
+  Account: undefined;
+};
 
-// Tipo genérico para cualquier pantalla
-export type RootStackScreenProps<T extends keyof RootStackParamList> =
-  NativeStackScreenProps<RootStackParamList, T>;
+// --- TAB NAVIGATOR PRINCIPAL ---
+
+export type AppTabParamList = {
+  HomeStack: NavigatorScreenParams<HomeStackParamList>;
+  AccountStack: NavigatorScreenParams<AccountStackParamList | AuthStackParamList>;
+};
+
+// --- TIPOS DE PROPS PARA CADA PANTALLA ---
+
+// Tipos para el Stack de Autenticación 
+export type AuthScreenProps<T extends keyof AuthStackParamList> =
+  NativeStackScreenProps<AuthStackParamList, T>;
+
+// Tipos para las pantallas dentro del HomeStack
+export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
+  CompositeScreenProps<
+    NativeStackScreenProps<HomeStackParamList, T>,
+    BottomTabScreenProps<AppTabParamList>
+  >;
+
+// Tipos para las pantallas dentro del AccountStack
+export type AccountStackScreenProps<T extends keyof AccountStackParamList> =
+  CompositeScreenProps<
+    NativeStackScreenProps<AccountStackParamList, T>,
+    BottomTabScreenProps<AppTabParamList>
+  >;
