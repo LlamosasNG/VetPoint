@@ -1,97 +1,143 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# VetPoint: Gestión Veterinaria Móvil
 
-# Getting Started
+| ![Banner VetPoint](/public/vetpoint1.jpg) | ![Banner VetPoint](/public/vetpoint2.jpg) |
+|:-------------------------------------:|:-------------------------------------:|
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+**VetPoint** es una aplicación móvil que hemos desarrollado con React Native para ayudar a profesionales de la veterinaria a gestionar la información de sus pacientes de manera eficiente y organizada. Nuestro objetivo con esta app es permitir llevar un registro detallado de los pacientes, sus dueños, diagnósticos y tratamientos, todo desde un dispositivo móvil.
 
-## Step 1: Start Metro
+---
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## ✨ Características Principales
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+* **Autenticación de Usuarios**: Sistema seguro de registro e inicio de sesión para veterinarios usando Firebase Auth.
+* **Gestión Completa de Pacientes (CRUD)**: La app permite crear, leer, actualizar y eliminar las fichas de los pacientes, guardando información detallada como nombre, especie, raza, edad, propietario, síntomas y tratamientos.
+* **Dashboard Interactivo**: Un panel principal que visualiza estadísticas clave y ordena a los pacientes por urgencia y fecha de creación para una mejor priorización.
+* **Búsqueda y Filtros**: Funcionalidad para encontrar pacientes rápidamente por nombre, especie o propietario, y para filtrarlos por su estado actual.
+* **Notificaciones de Citas**: Se pueden programar notificaciones locales para recordar las próximas citas de los pacientes.
+* **Perfil de Usuario**: Cada veterinario puede visualizar y gestionar su información profesional.
+* **Tema Claro y Oscuro**: Interfaz adaptable a las preferencias del sistema para una mejor experiencia visual.
 
-```sh
-# Using npm
-npm start
+---
 
-# OR using Yarn
-yarn start
-```
+## 🚀 Tecnologías Utilizadas
 
-## Step 2: Build and run your app
+* **Framework**: React Native
+* **Lenguaje**: TypeScript
+* **Backend como Servicio (BaaS)**: Firebase (Authentication y Firestore)
+* **Navegación**: React Navigation (Stack y Bottom Tabs)
+* **Notificaciones**: `react-native-push-notification`
+* **Iconografía y SVG**: `react-native-vector-icons` y `react-native-svg`
+* **Gestión de Estado**: React Context API
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+---
 
-### Android
+## 🛠️ Guía de Instalación y Configuración
 
-```sh
-# Using npm
-npm run android
+Sigue estos pasos en orden para configurar tu entorno de desarrollo y ejecutar el proyecto.
 
-# OR using Yarn
-yarn android
-```
+### Paso 1: Configurar Entorno de Desarrollo (Windows)
 
-### iOS
+Primero, necesitas preparar tu máquina con las herramientas adecuadas.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+1. **Instalar Chocolatey (Gestor de Paquetes)**: Facilita la instalación del resto de dependencias.
+    * Abre **PowerShell como Administrador** y ejecuta:
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+        ```powershell
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('[https://community.chocolatey.org/install.ps1](https://community.chocolatey.org/install.ps1)'))
+        ```
 
-```sh
-bundle install
-```
+    * Cierra y vuelve a abrir PowerShell como administrador.
 
-Then, and every time you update your native dependencies, run:
+2. **Instalar Node.js y JDK**:
+    * El proyecto requiere Node.js 18+ y el JDK 11. Con Chocolatey, puedes instalarlos con un solo comando:
 
-```sh
-bundle exec pod install
-```
+        ```powershell
+        choco install -y nodejs-lts openjdk11
+        ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+3. **Instalar Android Studio**:
+    * Descarga e instala [Android Studio](https://developer.android.com/studio).
+    * Durante la instalación, asegúrate de marcar `Android SDK`, `Android SDK Platform` y `Android Virtual Device`.
 
-```sh
-# Using npm
-npm run ios
+4. **Configurar Variables de Entorno de Android**:
+    * Abre "Editar las variables de entorno del sistema" en Windows.
+    * Crea una nueva variable de usuario `ANDROID_HOME` con la ruta: `%LOCALAPPDATA%\Android\Sdk`.
+    * Edita la variable `Path` y añade una nueva entrada: `%ANDROID_HOME%\platform-tools`.
 
-# OR using Yarn
-yarn ios
-```
+### Paso 2: Configurar el Proyecto de Firebase
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+La aplicación necesita un proyecto de Firebase para la base de datos y la autenticación.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+1. **Crear Proyecto en Firebase**:
+    * Ve a la [Consola de Firebase](https://console.firebase.google.com/), crea un proyecto nuevo.
+    * *![Crear proyecto en Firebase](public/create_project.png)*
 
-## Step 3: Modify your app
+2. **Habilitar Servicios**:
+    * En el menú de **Compilación (Build)**, habilita los siguientes servicios:
+        * **Authentication**: Pestaña "Sign-in method" -> Habilita **Correo electrónico/Contraseña**.
+        * **Firestore Database**: Crea una base de datos, puedes iniciar en **modo de prueba**.
+    * *![Habilitar servicios en la consola](public/options_project3.png)*
 
-Now that you have successfully run the app, let's make changes!
+3. **Conectar la App de Android**:
+    * En la vista general del proyecto de Firebase, haz clic en el icono de Android (🤖) para registrar tu app.
+    * Usa `com.vetpoint` como el **nombre del paquete de Android**.
+    * *![Opciones de registro de la app](public/options_project.png)*
+    * Descarga el archivo `google-services.json` y muévelo a la carpeta `android/app/` de este proyecto.
+    * *![Descargar archivo de configuración](public/options_project2.png)*
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### Paso 3: Instalar y Ejecutar VetPoint
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+1. **Clona el repositorio:**
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+    ```bash
+    git clone [https://github.com/llamosasng/vetpoint.git](https://github.com/llamosasng/vetpoint.git)
+    cd vetpoint
+    ```
 
-## Congratulations! :tada:
+2. **Instala las dependencias del proyecto:**
 
-You've successfully run and modified your React Native App. :partying_face:
+    ```bash
+    npm install
+    ```
 
-### Now what?
+3. **Ejecuta la aplicación en Android:**
+    * Abre Android Studio y lanza un emulador desde el **Virtual Device Manager**.
+    * Una vez que el emulador esté corriendo, ejecuta el siguiente comando en tu terminal:
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+    ```bash
+    npm run android
+    ```
 
-# Troubleshooting
+¡La aplicación debería compilarse e iniciarse en el emulador!
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+| ![Imagen React 1](/public/react1.jpg) | ![Imagen React 2](/public/react2.jpg) |
+|:-------------------------------------:|:-------------------------------------:|
 
-# Learn More
+---
 
-To learn more about React Native, take a look at the following resources:
+## 📂 Estructura del Proyecto
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+src/
+├── assets/         # Imágenes, SVGs y otros recursos estáticos
+├── components/     # Componentes de UI reutilizables
+│   ├── feature/    # Componentes complejos con lógica de negocio
+│   └── ui/         # Componentes básicos (Botones, Inputs, Cards)
+├── context/        # Contextos de React para la gestión del estado global
+├── navigation/     # Configuración de React Navigation y tipos
+├── screens/        # Las pantallas principales de la aplicación
+├── services/       # Servicios (ej. notificaciones)
+├── types/          # Definiciones de tipos de TypeScript
+└── utils/          # Funciones de utilidad y datos de prueba
+
+---
+
+## 🤝 Contribuciones
+
+¡Las contribuciones son siempre bienvenidas! Si deseas mejorar la aplicación, por favor sigue estos pasos:
+
+1. Haz un "Fork" del proyecto.
+2. Crea una nueva rama para tu funcionalidad (`git checkout -b feature/AmazingFeature`).
+3. Implementa tus cambios.
+4. Realiza un "Commit" de tus cambios (`git commit -m 'Add some AmazingFeature'`).
+5. Haz "Push" a la rama (`git push origin feature/AmazingFeature`).
+6. Abre un "Pull Request".
