@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
   text: {
     color: '#FFFFFF',
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: 13,
     textAlign: 'center',
     textTransform: 'uppercase',
   },

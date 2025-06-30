@@ -1,4 +1,4 @@
-import {useTheme} from '@context/ThemeContext';
+import { useTheme } from '@context/ThemeContext';
 import React from 'react';
 import {
   SafeAreaView,
@@ -8,98 +8,58 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons'; // Usaremos iconos para el botón de regreso
+
+// Un pequeño componente para el logo en el header
+const HeaderLogo = () => {
+    const { colors } = useTheme();
+    return <Icon name="paw" size={24} color={colors.primary} />;
+};
 
 interface HeaderProps {
   title: string;
-  subtitle?: string;
   showBackButton?: boolean;
   onBackPress?: () => void;
   rightComponent?: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'transparent';
 }
 
 export const Header: React.FC<HeaderProps> = ({
   title,
-  subtitle,
   showBackButton = false,
   onBackPress,
   rightComponent,
-  variant = 'primary',
 }) => {
-  const {colors, isDarkMode} = useTheme();
-
-  const getHeaderStyle = () => {
-    switch (variant) {
-      case 'primary':
-        return {backgroundColor: colors.primary};
-      case 'secondary':
-        return {backgroundColor: colors.surface};
-      case 'transparent':
-        return {backgroundColor: 'transparent'};
-      default:
-        return {backgroundColor: colors.primary};
-    }
-  };
-
-  const getTextColor = () => {
-    switch (variant) {
-      case 'primary':
-        return '#FFFFFF';
-      case 'secondary':
-      case 'transparent':
-        return colors.text;
-      default:
-        return '#FFFFFF';
-    }
-  };
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <>
       <StatusBar
-        barStyle={
-          variant === 'primary' || isDarkMode ? 'light-content' : 'dark-content'
-        }
-        backgroundColor={
-          variant === 'primary' ? colors.primary : colors.background
-        }
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.card} // El color del header ahora es 'card'
       />
-      <SafeAreaView style={[styles.safeArea, getHeaderStyle()]}>
-        <View style={[styles.container, getHeaderStyle()]}>
-          <View style={styles.content}>
-            {/* Botón de retroceso */}
-            {showBackButton && (
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={onBackPress}
-                activeOpacity={0.7}>
-                <Text style={[styles.backButtonText, {color: getTextColor()}]}>
-                  ←
-                </Text>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.card }]}>
+        <View style={[styles.container, { borderBottomColor: colors.border }]}>
+          {/* Lado Izquierdo: Botón de Regreso o Logo */}
+          <View style={styles.leftContainer}>
+            {showBackButton ? (
+              <TouchableOpacity style={styles.iconButton} onPress={onBackPress}>
+                <Icon name="arrow-back-outline" size={24} color={colors.text} />
               </TouchableOpacity>
+            ) : (
+              <HeaderLogo />
             )}
+          </View>
 
-            {/* Contenido central */}
-            <View
-              style={[
-                styles.centerContent,
-                !showBackButton && styles.centerContentFull,
-              ]}>
-              <Text
-                style={[styles.title, {color: getTextColor()}]}
-                numberOfLines={1}>
-                {title}
-              </Text>
-              {subtitle && (
-                <Text
-                  style={[styles.subtitle, {color: getTextColor() + '90'}]}
-                  numberOfLines={1}>
-                  {subtitle}
-                </Text>
-              )}
-            </View>
+          {/* Contenido Central: Título */}
+          <View style={styles.centerContainer}>
+            <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
+              {title}
+            </Text>
+          </View>
 
-            {/* Componente derecho */}
-            <View style={styles.rightContainer}>{rightComponent}</View>
+          {/* Lado Derecho: Acciones */}
+          <View style={styles.rightContainer}>
+            {rightComponent}
           </View>
         </View>
       </SafeAreaView>
@@ -107,64 +67,52 @@ export const Header: React.FC<HeaderProps> = ({
   );
 };
 
+// Componente específico para la app, ahora más simple
+export const VetHeader: React.FC<Omit<HeaderProps, 'title'> & { screenTitle: string }> = ({
+    screenTitle,
+    ...props
+}) => {
+    return <Header title={screenTitle} {...props} />;
+};
+
+
 const styles = StyleSheet.create({
   safeArea: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 4,
     zIndex: 1000,
   },
   container: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  content: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 44,
+    height: 60,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
   },
-  backButton: {
-    width: 44,
-    height: 44,
+  leftContainer: {
+    width: 60,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  centerContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  backButtonText: {
-    fontSize: 20,
-    fontWeight: '400',
-  },
-  centerContent: {
-    flex: 1,
-    alignItems: 'center',
-    marginHorizontal: 16,
-  },
-  centerContentFull: {
-    marginHorizontal: 0,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 2,
-  },
-  subtitle: {
-    fontSize: 14,
-    fontWeight: '400',
-    textAlign: 'center',
   },
   rightContainer: {
-    width: 44,
+    width: 60,
+    justifyContent: 'center',
     alignItems: 'flex-end',
   },
-});
-
-// Componente específico para la app veterinaria
-export const VetHeader: React.FC<
-  Omit<HeaderProps, 'title'> & {
-    screenTitle: string;
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  iconButton: {
+    padding: 8,
   }
-> = ({screenTitle, ...props}) => {
-  return <Header title={`VetPoint`} subtitle={screenTitle} {...props} />;
-};
+});

@@ -1,6 +1,8 @@
 import {useTheme} from '@context/ThemeContext';
 import React from 'react';
-import {StyleProp, TouchableOpacity, View, ViewStyle} from 'react-native';
+import {StyleProp, Text, TouchableOpacity, View, ViewStyle} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {styles} from './Card.styles';
 
 export interface CardProps {
   children: React.ReactNode;
@@ -129,21 +131,30 @@ export const PatientStatusCard: React.FC<{
   );
 };
 
-export const StatsCard: React.FC<{
-  children: React.ReactNode;
-  style?: StyleProp<ViewStyle>;
-}> = ({children, style}) => {
+interface StatsCardProps {
+  label: string;
+  value: number | string;
+  icon: string;
+  color: string;
+}
+
+export const StatsCard: React.FC<StatsCardProps> = ({
+  label,
+  value,
+  icon,
+  color,
+}) => {
+  const {colors} = useTheme();
+
   return (
     <Card
       variant="elevated"
-      style={[
-        {
-          margin: 4,
-          padding: 16,
-        },
-        style,
-      ]}>
-      {children}
+      style={[styles.statsCardContainer, {backgroundColor: colors.card}]}>
+      <View style={[styles.iconContainer, {backgroundColor: color + '20'}]}>
+        <Icon name={icon} size={24} color={color} />
+      </View>
+      <Text style={[styles.statsValue, {color: colors.text}]}>{value}</Text>
+      <Text style={[styles.statsLabel, {color: colors.gray}]}>{label}</Text>
     </Card>
   );
 };

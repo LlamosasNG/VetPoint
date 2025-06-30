@@ -9,14 +9,14 @@
       "@hooks/*": ["./hooks/*"],
       "@context/*": ["./context/*"],
       "@navigation/*": ["./navigation/*"],
-      "@services/*": ["./services/*"],
+      "@services/*": ["src/services/*"],
       "@utils/*": ["./utils/*"],
       "@types/*": ["./types/*"],
       "@assets/*": ["./assets/*"],
-      "@public/*": ["./public/*"],
+      "@public/*": ["./public/*"]
     },
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "App.tsx", "index.js"],
+  "include": ["src/**/*", "App.tsx", "index.js", "src/services"],
   "exclude": ["node_modules", "babel.config.js", "metro.config.js"]
 }

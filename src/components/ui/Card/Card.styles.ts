@@ -15,4 +15,28 @@ export const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  statsCardContainer: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 16,
+    marginHorizontal: 4,
+  },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statsValue: {
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  statsLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 4,
+    textAlign: 'center',
+  },
 });

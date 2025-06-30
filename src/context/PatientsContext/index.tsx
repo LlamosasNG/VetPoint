@@ -1,10 +1,10 @@
-import {notificationService} from '@/services/NotificationService';
 import {
   CreatePatientInput,
   Patient,
   PatientFilters,
   UpdatePatientInput,
 } from '@/types/Patient';
+import {mockPatients} from '@/utils/mockData';
 import {useAuth} from '@context/AuthContext';
 import firestore from '@react-native-firebase/firestore';
 import React, {
@@ -14,12 +14,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import {notificationService} from '../../services/NotificationService';
 
 interface PatientsContextProps {
   patients: Patient[];
   selectedPatient: Patient | null;
   loading: boolean;
   error: string | null;
+  loadMockData: () => Promise<void>; // Nueva función para cargar datos de prueba
   createPatient: (patientData: CreatePatientInput) => Promise<void>;
   updatePatient: (patientData: UpdatePatientInput) => Promise<void>;
   deletePatient: (id: string) => Promise<void>;
@@ -40,6 +42,27 @@ export const PatientsProvider: React.FC<{children: React.ReactNode}> = ({
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const loadMockData = async (): Promise<void> => {
+    if (!patientsCollection) throw new Error('Usuario no autenticado.');
+
+    console.log('Cargando datos de prueba en Firestore...');
+
+    // Usamos un batch para escribir todos los documentos en una sola operación
+    const batch = firestore().batch();
+
+    mockPatients.forEach(patient => {
+      const docRef = patientsCollection.doc(); // Crea una referencia con un ID automático
+      batch.set(docRef, {
+        ...patient,
+        dateCreated: firestore.FieldValue.serverTimestamp(),
+        lastVisit: firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+    await batch.commit();
+    console.log('¡Datos de prueba cargados exitosamente!');
+  };
 
   // Usamos una referencia para guardar el estado anterior de los pacientes
   const prevPatientsRef = useRef<Patient[]>();
@@ -180,6 +203,7 @@ export const PatientsProvider: React.FC<{children: React.ReactNode}> = ({
         selectedPatient,
         loading,
         error,
+        loadMockData,
         createPatient,
         updatePatient,
         deletePatient,

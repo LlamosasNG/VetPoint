@@ -1,11 +1,9 @@
-import {notificationService} from '@/services/NotificationService';
 import {Button, Card, VetHeader} from '@components/ui';
 import {useAuth} from '@context/AuthContext';
 import {useTheme} from '@context/ThemeContext';
 import React from 'react';
 import {
   ActivityIndicator,
-  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -13,15 +11,6 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
-const handleTestNotification = () => {
-  console.log('Intentando programar notificación de prueba en 5 segundos...');
-  notificationService.scheduleTestNotification();
-  Alert.alert(
-    'Prueba Iniciada',
-    'La notificación de prueba se ha programado para dentro de 5 segundos.',
-  );
-};
 
 // Componente para mostrar cada línea de información
 const InfoRow = ({icon, label, value, color}) => (
@@ -64,19 +53,6 @@ export const AccountScreen = () => {
     <SafeAreaView
       style={[styles.container, {backgroundColor: colors.background}]}>
       <VetHeader screenTitle="Mi Perfil" />
-
-      {/* --- BOTÓN DE PRUEBA --- */}
-      <Card style={styles.detailsCard}>
-        <Text style={[styles.cardTitle, {color: colors.text}]}>
-          Herramientas de Depuración
-        </Text>
-        <Button
-          text="Probar Notificación (5 seg)"
-          onPress={handleTestNotification}
-          type="secondary"
-        />
-      </Card>
-
       <ScrollView contentContainerStyle={styles.content}>
         {/* Tarjeta de Perfil Principal */}
         <Card style={styles.profileCard}>

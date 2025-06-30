@@ -1,5 +1,6 @@
 // src/screens/PatientDetail/index.tsx - Versión profesional completa
 
+import {PatientStatus} from '@/types';
 import {Button, Card, VetHeader} from '@components/ui';
 import {usePatients} from '@context/PatientsContext';
 import {useTheme} from '@context/ThemeContext';
@@ -8,7 +9,6 @@ import React, {useState} from 'react';
 import {
   Alert,
   Animated,
-  Dimensions,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -16,8 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
-const {width} = Dimensions.get('window');
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface TabInfo {
   key: string;
@@ -105,48 +104,40 @@ export const PatientDetailScreen: React.FC<
     );
   };
 
-  const getStatusColor = (status: typeof patient.status) => {
+  const getStatusInfo = (
+    status: PatientStatus,
+  ): {label: string; color: string; icon: string} => {
     switch (status) {
       case 'active':
-        return colors.statusActive;
+        return {
+          label: 'Activo',
+          color: colors.statusActive,
+          icon: 'paw-outline',
+        };
       case 'in_treatment':
-        return colors.statusTreatment;
+        return {
+          label: 'En Tratamiento',
+          color: colors.statusTreatment,
+          icon: 'pulse-outline',
+        };
       case 'recovered':
-        return colors.statusRecovered;
+        return {
+          label: 'Recuperado',
+          color: colors.statusRecovered,
+          icon: 'checkmark-circle-outline',
+        };
       case 'emergency':
-        return colors.statusEmergency;
+        return {
+          label: 'Emergencia',
+          color: colors.statusEmergency,
+          icon: 'alert-circle-outline',
+        };
       default:
-        return colors.gray;
-    }
-  };
-
-  const getStatusLabel = (status: typeof patient.status) => {
-    switch (status) {
-      case 'active':
-        return 'Activo';
-      case 'in_treatment':
-        return 'En Tratamiento';
-      case 'recovered':
-        return 'Recuperado';
-      case 'emergency':
-        return 'Emergencia';
-      default:
-        return 'Sin Estado';
-    }
-  };
-
-  const getStatusIcon = (status: typeof patient.status) => {
-    switch (status) {
-      case 'active':
-        return '🐾';
-      case 'in_treatment':
-        return '🏥';
-      case 'recovered':
-        return '✅';
-      case 'emergency':
-        return '🚨';
-      default:
-        return '📋';
+        return {
+          label: 'Sin Estado',
+          color: colors.gray,
+          icon: 'help-circle-outline',
+        };
     }
   };
 
@@ -191,57 +182,59 @@ export const PatientDetailScreen: React.FC<
   };
 
   // Header del paciente con información básica
-  const renderPatientHeader = () => (
-    <View style={[styles.patientHeader, {backgroundColor: colors.primary}]}>
-      <View style={styles.headerContent}>
-        {/* Información principal */}
-        <View style={styles.patientMainInfo}>
-          <View style={styles.nameSection}>
-            <Text style={styles.patientName}>{patient.name}</Text>
-            <View style={styles.genderAge}>
-              <Text style={styles.genderIcon}>
-                {patient.gender === 'male'
-                  ? '♂'
-                  : patient.gender === 'female'
-                  ? '♀'
-                  : ''}
-              </Text>
-              {patient.age && (
-                <Text style={styles.ageText}>{patient.age} años</Text>
-              )}
-            </View>
+  const renderPatientHeader = () => {
+    const {name, gender, age, species, breed, ownerName, status, dateCreated} =
+      patient;
+    const statusInfo = getStatusInfo(status);
+
+    return (
+      <View style={[styles.patientHeader, {backgroundColor: colors.primary}]}>
+        <View style={styles.headerTopRow}>
+          <View style={styles.patientMainInfo}>
+            <Text style={styles.patientName}>{name}</Text>
+            <Text style={styles.speciesBreed}>
+              {species} {breed && `• ${breed}`}
+            </Text>
           </View>
-
-          <Text style={styles.speciesBreed}>
-            {patient.species}
-            {patient.breed && ` • ${patient.breed}`}
-          </Text>
-
-          <Text style={styles.ownerInfo}>Propietario: {patient.ownerName}</Text>
-        </View>
-
-        {/* Estado del paciente */}
-        <View style={styles.statusSection}>
           <View
             style={[
               styles.statusBadge,
-              {backgroundColor: 'rgba(255, 255, 255, 0.2)'},
+              {backgroundColor: statusInfo.color + '33'},
             ]}>
-            <Text style={styles.statusIcon}>
-              {getStatusIcon(patient.status)}
-            </Text>
-            <Text style={styles.statusText}>
-              {getStatusLabel(patient.status)}
+            <Icon name={statusInfo.icon} size={16} color={statusInfo.color} />
+            <Text style={[styles.statusText, {color: statusInfo.color}]}>
+              {statusInfo.label}
             </Text>
           </View>
+        </View>
 
-          <Text style={styles.registeredDate}>
-            Registrado: {getDaysAgo(patient.dateCreated)}
-          </Text>
+        <View style={styles.headerBottomRow}>
+          <View style={styles.detailItem}>
+            <Icon
+              name={gender === 'male' ? 'male' : 'female'}
+              size={18}
+              color="#FFFFFF90"
+            />
+            <Text style={styles.detailText}>
+              {gender === 'male' ? 'Macho' : 'Hembra'}
+            </Text>
+          </View>
+          {age && (
+            <View style={styles.detailItem}>
+              <Icon name="hourglass-outline" size={16} color="#FFFFFF90" />
+              <Text style={styles.detailText}>{age} años</Text>
+            </View>
+          )}
+          <View style={styles.detailItem}>
+            <Icon name="calendar-outline" size={16} color="#FFFFFF90" />
+            <Text style={styles.detailText}>
+              Registrado {getDaysAgo(dateCreated)}
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   // Sistema de pestañas mejorado
   const renderTabNavigation = () => (
@@ -654,8 +647,34 @@ const styles = StyleSheet.create({
 
   // Header del paciente
   patientHeader: {
-    paddingVertical: 24,
     paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 16,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+  },
+  headerBottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 24, // Espacio entre los items
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  detailText: {
+    color: '#FFFFFFB3',
+    fontSize: 14,
+    marginLeft: 6,
+    fontWeight: '500',
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
   },
   headerContent: {
     flexDirection: 'row',
@@ -673,9 +692,9 @@ const styles = StyleSheet.create({
   },
   patientName: {
     fontSize: 28,
-    fontWeight: '800',
+    fontWeight: 'bold',
     color: '#FFFFFF',
-    flex: 1,
+    lineHeight: 34,
   },
   genderAge: {
     flexDirection: 'row',
@@ -693,10 +712,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF90',
   },
   speciesBreed: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '500',
-    color: '#FFFFFF90',
-    marginBottom: 6,
+    color: '#FFFFFFB3', // Blanco con 70% de opacidad
+    marginTop: 4,
   },
   ownerInfo: {
     fontSize: 14,
@@ -709,21 +728,19 @@ const styles = StyleSheet.create({
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 20,
-    marginBottom: 8,
   },
   statusIcon: {
     fontSize: 16,
     marginRight: 8,
   },
   statusText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    marginLeft: 6,
+    fontSize: 12,
+    fontWeight: 'bold',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   registeredDate: {
     fontSize: 12,
